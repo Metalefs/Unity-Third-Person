@@ -16,6 +16,7 @@ public class PlayerAttackingState : PlayerBaseState
 
     public override void Enter()
     {
+        stateMachine.WeaponDamage.SetDamage(attack.Damage);
         stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration);
     }
 
@@ -56,7 +57,7 @@ public class PlayerAttackingState : PlayerBaseState
 
     public override void Exit()
     {
-
+        
     }
 
     private void TryComboAttack(float normalizedTime)
