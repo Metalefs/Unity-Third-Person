@@ -6,7 +6,7 @@ public class PlayerAttackingState : PlayerBaseState
 {
     private float previousFrameTime;
     private bool alreadyAppliedForce;
-
+    private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
     private Attack attack;
 
     public PlayerAttackingState(PlayerStateMachine stateMachine, int attackIndex) : base(stateMachine)
@@ -17,14 +17,13 @@ public class PlayerAttackingState : PlayerBaseState
     public override void Enter()
     {
         stateMachine.WeaponDamage.SetDamage(attack.Damage);
-        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration);
+        stateMachine.Animator.SetLayerWeight(1, 1);
+        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration, 1);
     }
 
     public override void Tick(float deltaTime)
     {
-        Move(deltaTime);
-
-        FaceTarget();
+        Movement(deltaTime);
 
         float normalizedTime = GetNormalizedTime();
 
@@ -60,6 +59,32 @@ public class PlayerAttackingState : PlayerBaseState
         
     }
 
+    private void Movement(float deltaTime){
+        Vector3 movement = CalculateMovement();
+        stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * stateMachine.FreeLookMovementSpeed/2) * deltaTime);
+        if(stateMachine.InputReader.MovementValue == Vector2.zero){
+            stateMachine.Animator.SetFloat(FreeLookSpeedHash, 0, 0.1f, deltaTime);
+            return;
+        }
+        stateMachine.Animator.SetFloat(FreeLookSpeedHash, 1, 0.1f, deltaTime);
+        FaceTarget();
+        FaceMovementDirection(movement,deltaTime);
+    }
+
+    private Vector3 CalculateMovement(){
+        Vector3 cameraForward = stateMachine.MainCameraTransform.forward;
+        Vector3 cameraRight = stateMachine.MainCameraTransform.right;
+
+        cameraForward.y = 0;
+        cameraRight.y = 0;
+
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        return cameraForward * stateMachine.InputReader.MovementValue.y 
+        + cameraRight * stateMachine.InputReader.MovementValue.x;
+    }
+
     private void TryComboAttack(float normalizedTime)
     {
         if (attack.ComboStateIndex == -1) { return; }
@@ -85,14 +110,14 @@ public class PlayerAttackingState : PlayerBaseState
 
     private float GetNormalizedTime()
     {
-        AnimatorStateInfo currentInfo = stateMachine.Animator.GetCurrentAnimatorStateInfo(0);
-        AnimatorStateInfo nextInfo = stateMachine.Animator.GetNextAnimatorStateInfo(0);
-
-        if (stateMachine.Animator.IsInTransition(0) && nextInfo.IsTag("Attack"))
+        AnimatorStateInfo currentInfo = stateMachine.Animator.GetCurrentAnimatorStateInfo(1);
+        AnimatorStateInfo nextInfo = stateMachine.Animator.GetNextAnimatorStateInfo(1);
+        
+        if (stateMachine.Animator.IsInTransition(1) && nextInfo.IsTag("Attack"))
         {
             return nextInfo.normalizedTime;
         }
-        else if (!stateMachine.Animator.IsInTransition(0) && currentInfo.IsTag("Attack"))
+        else if (!stateMachine.Animator.IsInTransition(1) && currentInfo.IsTag("Attack"))
         {
             return currentInfo.normalizedTime;
         }

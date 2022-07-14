@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class PlayerBaseState : State
 {
+    public float Speed = 1f;
     public PlayerStateMachine stateMachine;
     public PlayerBaseState(PlayerStateMachine stateMachine)
     {
@@ -13,16 +14,29 @@ public abstract class PlayerBaseState : State
     public void SubscribeToInputEvents()
     {
         //stateMachine.InputReader.JumpEvent += OnJump;
+        stateMachine.InputReader.LookEvent += OnLook;
         stateMachine.InputReader.TargetEvent += OnTarget;
     }
 
     public void UnsubscribeFromInputEvents()
     {
         //stateMachine.InputReader.JumpEvent -= OnJump;        
+        stateMachine.InputReader.LookEvent -= OnLook;
         stateMachine.InputReader.TargetEvent -= OnTarget;
     }
 
-     protected void Move(float deltaTime)
+    private void OnLook()
+    {
+        if(Speed > 0) return;
+        var CharacterRotation = Camera.main.transform.transform.rotation;
+        CharacterRotation.x = 0;
+        CharacterRotation.z = 0;
+
+        stateMachine.transform.rotation = CharacterRotation;
+        stateMachine.Targeter.SelectTarget();
+    }
+
+    protected void Move(float deltaTime)
     {
         Move(Vector3.zero, deltaTime);
     }
@@ -32,10 +46,9 @@ public abstract class PlayerBaseState : State
         stateMachine.Controller.Move((motion + stateMachine.ForceReceiver.Movement) * deltaTime);
     }
 
-
-
-    public void FaceMovementDirection(Vector3 movement, float deltaTime){
-        if(movement == Vector3.zero) return;
+    public void FaceMovementDirection(Vector3 movement, float deltaTime)
+    {
+        if (movement == Vector3.zero) return;
         Quaternion targetRotation = Quaternion.LookRotation(movement);
         stateMachine.transform.rotation = Quaternion.Slerp(stateMachine.transform.rotation, targetRotation, deltaTime * stateMachine.RotationDamping);
     }
@@ -50,7 +63,6 @@ public abstract class PlayerBaseState : State
 
     public void OnTarget()
     {
-        if (!stateMachine.Targeter.SelectTarget()) { return; }
         if (stateMachine.currentState is PlayerTargetingState)
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
         else

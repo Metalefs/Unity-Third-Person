@@ -42,7 +42,10 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
         MovementValue = context.ReadValue<Vector2>();
     }
 
-    public void OnLook(InputAction.CallbackContext context) { }
+    public void OnLook(InputAction.CallbackContext context) { 
+        if (!context.performed) return;
+        LookEvent?.Invoke();
+    }
 
     public void OnTarget(InputAction.CallbackContext context)
     {

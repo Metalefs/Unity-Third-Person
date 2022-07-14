@@ -58,6 +58,10 @@ public class Targeter : MonoBehaviour
         if (closestTarget == null) { return false; }
 
         CurrentTarget = closestTarget;
+        if(cineTargetGroup.FindMember(CurrentTarget.transform) > 0)
+        {
+            cineTargetGroup.RemoveMember(CurrentTarget.transform);
+        }
         cineTargetGroup.AddMember(CurrentTarget.transform, 1f, 2f);
 
         return true;
