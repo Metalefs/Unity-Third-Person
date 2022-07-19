@@ -8,7 +8,7 @@ public abstract class EnemyBaseState : State
         this.stateMachine = stateMachine;
     }
 
-    protected void Move(float deltaTime)
+     protected void Move(float deltaTime)
     {
         Move(Vector3.zero, deltaTime);
     }
@@ -18,18 +18,23 @@ public abstract class EnemyBaseState : State
         stateMachine.Controller.Move((motion + stateMachine.ForceReceiver.Movement) * deltaTime);
     }
 
-    public void FaceMovementDirection(Vector3 movement, float deltaTime){
-        if(movement == Vector3.zero) return;
-        Quaternion targetRotation = Quaternion.LookRotation(movement);
-        stateMachine.transform.rotation = Quaternion.Slerp(stateMachine.transform.rotation, targetRotation, deltaTime * stateMachine.RotationDamping);
-    }
-
-    protected void FaceTarget()
+    protected void FacePlayer()
     {
-        if (stateMachine.Targeter.CurrentTarget == null) { return; }
-        Vector3 lookPos = stateMachine.Targeter.CurrentTarget.transform.position - stateMachine.transform.position;
+        if (stateMachine.Player == null) { return; }
+
+        Vector3 lookPos = stateMachine.Player.transform.position - stateMachine.transform.position;
         lookPos.y = 0f;
+
         stateMachine.transform.rotation = Quaternion.LookRotation(lookPos);
     }
+
+    protected bool IsInChaseRange()
+    {
+        //if (stateMachine.Player.IsDead) { return false; }
+
+        float playerDistanceSqr = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
+        return playerDistanceSqr <= stateMachine.PlayerChasingRange * stateMachine.PlayerChasingRange;
+    }
+
 
 }

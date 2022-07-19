@@ -4,6 +4,8 @@ public abstract class PlayerBaseState : State
 {
     public float Speed = 1f;
     public PlayerStateMachine stateMachine;
+
+    public bool IsDead { get { return stateMachine.IsDead; } }
     public PlayerBaseState(PlayerStateMachine stateMachine)
     {
         this.stateMachine = stateMachine;

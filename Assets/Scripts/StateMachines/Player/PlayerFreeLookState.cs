@@ -10,7 +10,6 @@ public class PlayerFreeLookState : PlayerBaseState
     
     public override void Enter()
     {
-        Debug.Log("Entering FreeLookState");
         stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTreeHash, CrossFadeDuration, 0);
         stateMachine.Animator.SetLayerWeight(1, 0);
     }
@@ -25,7 +24,7 @@ public class PlayerFreeLookState : PlayerBaseState
         Vector3 movement = CalculateMovement();
         if(Speed < stateMachine.FreeLookMovementSpeed)
         {
-            Speed += deltaTime * 3;
+            Speed += deltaTime * 4;
         }
         stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * Speed) * deltaTime);
         if(stateMachine.InputReader.MovementValue == Vector2.zero){
@@ -54,6 +53,5 @@ public class PlayerFreeLookState : PlayerBaseState
     public override void Exit()
     {
         UnsubscribeFromInputEvents();
-        Debug.Log("Exiting FreeLookState");
     }
 }

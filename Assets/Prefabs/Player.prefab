@@ -1530,6 +1530,7 @@ MonoBehaviour:
     <ForceTime>k__BackingField: 0.35
     <Damage>k__BackingField: 20
   <WeaponDamage>k__BackingField: {fileID: 3055328874067942012}
+  IsDead: 0
 --- !u!95 &2322371294744884340
 Animator:
   serializedVersion: 4
@@ -1580,7 +1581,7 @@ CharacterController:
   m_StepOffset: 0.1
   m_SkinWidth: 0.003
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!1 &4177330340289448005
 GameObject:
   m_ObjectHideFlags: 0
@@ -2518,7 +2519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7204187241973964610
 Transform:
   m_ObjectHideFlags: 0
@@ -2636,7 +2637,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 15
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!54 &3808463715216506457
 Rigidbody:
   m_ObjectHideFlags: 0

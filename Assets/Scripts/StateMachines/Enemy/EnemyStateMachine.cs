@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyStateMachine : StateMachine
 {
@@ -11,11 +12,22 @@ public class EnemyStateMachine : StateMachine
     [field: SerializeField] public ForceReceiver ForceReceiver { get; private set; }
     [field: SerializeField] public Attack[] Attacks { get; private set; }
     [field: SerializeField] public WeaponDamage WeaponDamage { get; private set; }
-    public Transform MainCameraTransform  { get; private set; }
+    [field: SerializeField] public float PlayerChasingRange { get; private set; }
+    [field: SerializeField] public float MovementSpeed { get; private set; }
+    [field: SerializeField] public NavMeshAgent Agent { get; private set; }
+    [field: SerializeField] public float AttackRange { get; private set; }
+    public GameObject Player { get; private set; }
     void Start()
     {
-        MainCameraTransform = Camera.main.transform;
-        SwitchState(new EnemyFreeLookState(this));
+        Player = GameObject.FindGameObjectWithTag("Player");
+        Agent.updatePosition = false;
+        Agent.updateRotation = false;
+        SwitchState(new EnemyIdleState(this));
+    }
+
+    void OnDrawGizmos(){
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, PlayerChasingRange);
     }
 
     // Update is called once per frame
