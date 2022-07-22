@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyChasingState : EnemyBaseState
 {
-     private readonly int LocomotionHash = Animator.StringToHash("Locomotion");
+    private readonly int LocomotionHash = Animator.StringToHash("Locomotion");
     private readonly int SpeedHash = Animator.StringToHash("EnemySpeed");
 
     private const float CrossFadeDuration = 0.5f;
@@ -12,7 +12,8 @@ public class EnemyChasingState : EnemyBaseState
 
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(LocomotionHash, CrossFadeDuration);
+        stateMachine.Animator.CrossFadeInFixedTime(LocomotionHash, CrossFadeDuration, 0);
+        stateMachine.Animator.SetLayerWeight(1, 0);
     }
 
     public override void Tick(float deltaTime)
@@ -22,11 +23,11 @@ public class EnemyChasingState : EnemyBaseState
             stateMachine.SwitchState(new EnemyIdleState(stateMachine));
             return;
         }
-        // else if (IsInAttackRange())
-        // {
-        //     stateMachine.SwitchState(new EnemyAttackingState(stateMachine));
-        //     return;
-        // }
+        else if (IsInAttackRange())
+        {
+            stateMachine.SwitchState(new EnemyAttackingState(stateMachine, 0));
+            return;
+        }
 
         MoveToPlayer(deltaTime);
 
@@ -37,7 +38,10 @@ public class EnemyChasingState : EnemyBaseState
 
     public override void Exit()
     {
-        stateMachine.Agent.ResetPath();
+        if (stateMachine.Agent.isActiveAndEnabled)
+        {
+            stateMachine.Agent.ResetPath();
+        }
         stateMachine.Agent.velocity = Vector3.zero;
     }
 
@@ -45,7 +49,7 @@ public class EnemyChasingState : EnemyBaseState
     {
         if (stateMachine.Agent.isOnNavMesh)
         {
-            stateMachine.Agent.destination = stateMachine.Player.transform.position + stateMachine.Player.transform.forward * stateMachine.AttackRange;
+            stateMachine.Agent.destination = stateMachine.Player.transform.position;
 
             Move(stateMachine.Agent.desiredVelocity.normalized * stateMachine.MovementSpeed, deltaTime);
         }
@@ -53,12 +57,12 @@ public class EnemyChasingState : EnemyBaseState
         stateMachine.Agent.velocity = stateMachine.Controller.velocity;
     }
 
-    // private bool IsInAttackRange()
-    // {
-    //     if (stateMachine.Player.IsDead) { return false; }
+    private bool IsInAttackRange()
+    {
+        //if (stateMachine.Player.IsDead) { return false; }
 
-    //     float playerDistanceSqr = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
+        float playerDistanceSqr = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
 
-    //     return playerDistanceSqr <= stateMachine.AttackRange * stateMachine.AttackRange;
-    // }
+        return playerDistanceSqr <= stateMachine.AttackRange * stateMachine.AttackRange;
+    }
 }

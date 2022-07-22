@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
-
+    [field: SerializeField] public Animator Animator  { get; private set; }
     public State currentState;
 
     public void SwitchState(State newState)

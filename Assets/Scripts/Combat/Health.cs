@@ -1,38 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [field:SerializeField] private float maxHealth = 100f;
-    private float health;
+    [SerializeField] private int maxHealth = 100;
+
+    private int health;
+    private bool isInvulnerable;
+
+    public event Action OnTakeDamage;
+    public event Action OnDie;
+
+    public bool IsDead => health == 0;
 
     private void Start()
     {
-        health = (float)maxHealth;
+        health = maxHealth;
     }
 
-    public void TakeDamage(float damage)
+    public void SetInvulnerable(bool isInvulnerable)
     {
-        if (health == 0) {return;}
+        this.isInvulnerable = isInvulnerable;
+    }
+
+    public void DealDamage(int damage)
+    {
+        if (health == 0) { return; }
+
+        if (isInvulnerable) { return; }
+
         health = Mathf.Max(health - damage, 0);
-        Debug.Log("health: " + health);
-        if (health == 0){
-            Die();
-        }
-    }
 
-    private void Die()
-    {
-        Destroy(gameObject);
-    }
+        OnTakeDamage?.Invoke();
 
-    public void Heal(int heal)
-    {
-        health += heal;
-        if (health > maxHealth)
+        if (health == 0)
         {
-            health = (int)maxHealth;
+            OnDie?.Invoke();
         }
     }
 }
+

@@ -29,7 +29,7 @@ public abstract class PlayerBaseState : State
 
     private void OnLook()
     {
-        if(Speed > 0) return;
+        if (Speed > 0) return;
         var CharacterRotation = Camera.main.transform.transform.rotation;
         CharacterRotation.x = 0;
         CharacterRotation.z = 0;
@@ -57,6 +57,7 @@ public abstract class PlayerBaseState : State
 
     protected void FaceTarget()
     {
+        if (stateMachine.currentState is PlayerFreeLookState) return;
         if (stateMachine.Targeter.CurrentTarget == null) { return; }
         Vector3 lookPos = stateMachine.Targeter.CurrentTarget.transform.position - stateMachine.transform.position;
         lookPos.y = 0f;
@@ -69,6 +70,18 @@ public abstract class PlayerBaseState : State
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
         else
             stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+    }
+
+    protected void ReturnToLocomotion()
+    {
+        if (stateMachine.Targeter.CurrentTarget != null)
+        {
+            stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+        }
+        else
+        {
+            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+        }
     }
 
 }
