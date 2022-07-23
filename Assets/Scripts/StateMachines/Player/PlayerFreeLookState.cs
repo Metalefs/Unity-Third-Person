@@ -2,23 +2,24 @@ using UnityEngine;
 
 public class PlayerFreeLookState : PlayerBaseState
 {
-    private readonly int FreeLookBlendTreeHash = Animator.StringToHash("FreeLookBlendTree");
-    private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
-    private float AnimatorDampTime = 0.1f;
-    private float CrossFadeDuration = 0.5f;
     public PlayerFreeLookState(PlayerStateMachine stateMachine) : base(stateMachine){}
     
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTreeHash, CrossFadeDuration, 0);
-        stateMachine.Animator.SetLayerWeight(1, 0);
+        stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
         stateMachine.Animator.stabilizeFeet = true;
     }
     public override void Tick(float deltaTime)
     {
-         if (stateMachine.InputReader.IsAttacking)
+        if (stateMachine.InputReader.IsAttacking)
         {
             stateMachine.SwitchState(new PlayerAttackingState(stateMachine, 0));
+            return;
+        }
+
+        if (stateMachine.InputReader.IsBlocking)
+        {
+            stateMachine.SwitchState(new PlayerBlockingState(stateMachine));
             return;
         }
 
@@ -29,11 +30,11 @@ public class PlayerFreeLookState : PlayerBaseState
         }
         stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * Speed) * deltaTime);
         if(stateMachine.InputReader.MovementValue == Vector2.zero){
-            stateMachine.Animator.SetFloat(FreeLookSpeedHash, 0, AnimatorDampTime, deltaTime);
+            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, deltaTime);
             Speed = 0;
             return;
         }
-        stateMachine.Animator.SetFloat(FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
+        stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
         FaceMovementDirection(movement,deltaTime);
     }
     

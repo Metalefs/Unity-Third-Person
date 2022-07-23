@@ -15,8 +15,7 @@ public class EnemyAttackingState : EnemyBaseState
     {
         foreach(var wpd in stateMachine.WeaponDamage)
             wpd.SetAttack(attack.Damage, attack.Knockback);
-        stateMachine.Animator.SetLayerWeight(1, 1);
-        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration, 1);
+        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration);
     }
 
     public override void Tick(float deltaTime)

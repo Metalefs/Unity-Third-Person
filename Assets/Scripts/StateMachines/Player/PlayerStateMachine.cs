@@ -12,6 +12,7 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public Attack[] Attacks { get; private set; }
     [field: SerializeField] public WeaponDamage WeaponDamage { get; private set; }
     [field: SerializeField] public Health Health { get; private set; }
+    [field: SerializeField] public Ragdoll Ragdoll { get; private set; }
     public Transform MainCameraTransform  { get; private set; }
     public bool IsDead = false;
     void Start()
@@ -25,19 +26,26 @@ public class PlayerStateMachine : StateMachine
     {
         currentState?.Tick(Time.deltaTime);
     }
-     private void OnEnable()
+    private void OnEnable()
     {
         Health.OnTakeDamage += HandleTakeDamage;
+        Health.OnDie += HandleDie;
     }
 
     private void OnDisable()
     {
         Health.OnTakeDamage -= HandleTakeDamage;
+        Health.OnDie -= HandleDie;
     }
 
     private void HandleTakeDamage()
     {
-        //SwitchState(new PlayerImpactState(this));
+        SwitchState(new PlayerImpactState(this));
+    }
+
+    private void HandleDie()
+    {
+        SwitchState(new PlayerDeadState(this));
     }
 
 }

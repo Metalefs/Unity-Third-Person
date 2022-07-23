@@ -13,7 +13,6 @@ public class EnemyChasingState : EnemyBaseState
     public override void Enter()
     {
         stateMachine.Animator.CrossFadeInFixedTime(LocomotionHash, CrossFadeDuration, 0);
-        stateMachine.Animator.SetLayerWeight(1, 0);
     }
 
     public override void Tick(float deltaTime)

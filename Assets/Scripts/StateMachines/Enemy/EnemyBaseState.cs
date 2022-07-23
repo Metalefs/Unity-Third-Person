@@ -8,7 +8,7 @@ public abstract class EnemyBaseState : State
         this.stateMachine = stateMachine;
     }
 
-     protected void Move(float deltaTime)
+    protected void Move(float deltaTime)
     {
         Move(Vector3.zero, deltaTime);
     }
@@ -36,5 +36,16 @@ public abstract class EnemyBaseState : State
         return playerDistanceSqr <= stateMachine.PlayerChasingRange * stateMachine.PlayerChasingRange;
     }
 
+    protected void ReturnToLocomotion()
+    {
+        if (IsInChaseRange())
+        {
+            stateMachine.SwitchState(new EnemyChasingState(stateMachine));
+        }
+        else
+        {
+            stateMachine.SwitchState(new EnemyIdleState(stateMachine));
+        }
+    }
 
 }

@@ -6,7 +6,6 @@ public class PlayerAttackingState : PlayerBaseState
 {
     private float previousFrameTime;
     private bool alreadyAppliedForce;
-    private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
     private Attack attack;
 
     public PlayerAttackingState(PlayerStateMachine stateMachine, int attackIndex) : base(stateMachine)
@@ -17,8 +16,7 @@ public class PlayerAttackingState : PlayerBaseState
     public override void Enter()
     {
         stateMachine.WeaponDamage.SetAttack(attack.Damage, attack.Knockback);
-        stateMachine.Animator.SetLayerWeight(1, 1);
-        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration, 1);
+        stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration);
     }
 
     public override void Tick(float deltaTime)
@@ -30,7 +28,7 @@ public class PlayerAttackingState : PlayerBaseState
         if (normalizedTime >= previousFrameTime && normalizedTime < 1f)
         {
 
-            if(normalizedTime >= attack.ForceTime)
+            if (normalizedTime >= attack.ForceTime)
             {
                 TryApplyForce();
             }
@@ -42,36 +40,45 @@ public class PlayerAttackingState : PlayerBaseState
         }
         else
         {
-            if(stateMachine.Targeter.CurrentTarget != null)
+            if (stateMachine.lastState is not PlayerAttackingState)
             {
-                stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+                stateMachine.SwitchState(stateMachine.lastState);
             }
-            else{
-                stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+            else
+            {
+                if (stateMachine.Targeter.CurrentTarget != null)
+                {
+                    stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+                }
+                else
+                {
+                    stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+                }
             }
         }
 
         previousFrameTime = normalizedTime;
     }
 
-    public override void Exit()
+    private void Movement(float deltaTime)
     {
-        
-    }
-
-    private void Movement(float deltaTime){
         Vector3 movement = CalculateMovement();
-        stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * stateMachine.FreeLookMovementSpeed/2) * deltaTime);
-        if(stateMachine.InputReader.MovementValue == Vector2.zero){
-            stateMachine.Animator.SetFloat(FreeLookSpeedHash, 0, 0.1f, deltaTime);
+        stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * stateMachine.FreeLookMovementSpeed / 2) * deltaTime);
+        if (stateMachine.InputReader.MovementValue == Vector2.zero)
+        {
+            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, 0.1f, deltaTime);
             return;
         }
-        stateMachine.Animator.SetFloat(FreeLookSpeedHash, 1, 0.1f, deltaTime);
-        FaceTarget();
-        FaceMovementDirection(movement,deltaTime);
+        stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, 0.1f, deltaTime);
+        
+        if(stateMachine.lastState is PlayerTargetingState)
+            FaceTarget();
+        
+        FaceMovementDirection(movement, deltaTime);
     }
 
-    private Vector3 CalculateMovement(){
+    private Vector3 CalculateMovement()
+    {
         Vector3 cameraForward = stateMachine.MainCameraTransform.forward;
         Vector3 cameraRight = stateMachine.MainCameraTransform.right;
 
@@ -81,7 +88,13 @@ public class PlayerAttackingState : PlayerBaseState
         cameraForward.Normalize();
         cameraRight.Normalize();
 
-        return cameraForward * stateMachine.InputReader.MovementValue.y 
+        //cannot move backwards when attacking
+        if (stateMachine.InputReader.MovementValue.x < 0)
+        {
+            return Vector3.zero;
+        }
+
+        return cameraForward * stateMachine.InputReader.MovementValue.y
         + cameraRight * stateMachine.InputReader.MovementValue.x;
     }
 
@@ -106,5 +119,10 @@ public class PlayerAttackingState : PlayerBaseState
         if (alreadyAppliedForce) { return; }
         stateMachine.ForceReceiver.AddForce(stateMachine.transform.forward * attack.Force);
         alreadyAppliedForce = true;
+    }
+    
+    public override void Exit()
+    {
+        UnsubscribeFromInputEvents();
     }
 }

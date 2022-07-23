@@ -3,6 +3,10 @@ using UnityEngine;
 public abstract class PlayerBaseState : State
 {
     public float Speed = 1f;
+    
+    public float AnimatorDampTime = 0.1f;
+    public float CrossFadeDuration = 0.5f;
+
     public PlayerStateMachine stateMachine;
 
     public bool IsDead { get { return stateMachine.IsDead; } }
@@ -66,7 +70,8 @@ public abstract class PlayerBaseState : State
 
     public void OnTarget()
     {
-        if (stateMachine.currentState is PlayerTargetingState)
+        Debug.Log(stateMachine.currentState.GetType().Name + ": OnTarget");
+        if (stateMachine.currentState is PlayerTargetingState || stateMachine.currentState is PlayerAttackingState)
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
         else
             stateMachine.SwitchState(new PlayerTargetingState(stateMachine));

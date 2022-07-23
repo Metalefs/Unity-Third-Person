@@ -3,9 +3,7 @@ using UnityEngine;
 
 public class PlayerImpactState : PlayerBaseState
 {
-    private readonly int ImpactHash = Animator.StringToHash("Impact");
-
-    private const float CrossFadeDuration = 0.1f;
+    private new const float CrossFadeDuration = 0.1f;
 
     private float duration = 1f;
 
@@ -13,7 +11,7 @@ public class PlayerImpactState : PlayerBaseState
 
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(ImpactHash, CrossFadeDuration);
+        stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.ImpactHash, CrossFadeDuration);
     }
 
     public override void Tick(float deltaTime)
