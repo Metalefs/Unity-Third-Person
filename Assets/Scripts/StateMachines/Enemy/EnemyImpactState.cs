@@ -2,17 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyImpactState : MonoBehaviour
+public class EnemyImpactState : EnemyBaseState
 {
-    // Start is called before the first frame update
-    void Start()
+    private readonly int ImpactHash = Animator.StringToHash("Impact1");
+
+    private const float CrossFadeDuration = 0.1f;
+
+    private float duration = 1f;
+
+    public EnemyImpactState(EnemyStateMachine stateMachine) : base(stateMachine) { }
+
+    public override void Enter()
     {
-        
+        stateMachine.Animator.CrossFadeInFixedTime(ImpactHash, CrossFadeDuration);
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Tick(float deltaTime)
     {
-        
+        Move(deltaTime);
+
+        duration -= deltaTime;
+
+        if(duration <= 0f)
+        {
+            ReturnToLocomotion();
+        }
     }
+
+    public override void Exit() { }
 }
+
