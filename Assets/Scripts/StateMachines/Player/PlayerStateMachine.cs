@@ -47,6 +47,12 @@ public class PlayerStateMachine : StateMachine
 
     private void HandleDie()
     {
+        IsDead = true;
+        if(Animator.HasState(0, PlayerAnimatorHashes.DeadStateHash))
+        {
+            Animator.Play(PlayerAnimatorHashes.DeadStateHash, 0, 0);
+        }
+        Targeter.enabled = false;
         SwitchState(new PlayerDeadState(this));
     }
 

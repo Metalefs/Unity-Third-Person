@@ -7,5 +7,6 @@ public static class PlayerAnimatorHashes {
     public static int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
     public static int FreeLookBlendTreeHash = Animator.StringToHash("FreeLookBlendTree");    
     public static int ImpactHash = Animator.StringToHash("Impact1");
+    public static int DeadStateHash = Animator.StringToHash("Dead");
 
 } 

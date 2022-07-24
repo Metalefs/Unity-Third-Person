@@ -33,6 +33,11 @@ public class EnemyAttackingState : EnemyBaseState
         }
         else
         {
+            if(IsInAttackRange())
+            {
+                stateMachine.SwitchState(new EnemyAttackingState(stateMachine, attack.ComboStateIndex));
+                return;
+            }
             stateMachine.SwitchState(new EnemyChasingState(stateMachine));
         }
         FacePlayer();

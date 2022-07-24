@@ -15,11 +15,9 @@ public class PlayerDeadState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        Move(Vector3.zero,deltaTime);
     }
 
     public override void Exit()
     {
-        UnsubscribeFromInputEvents();
     }
 }

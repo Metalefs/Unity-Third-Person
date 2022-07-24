@@ -2283,7 +2283,7 @@ MonoBehaviour:
     <ForceTime>k__BackingField: 0.35
     <Force>k__BackingField: 5
     <Damage>k__BackingField: 15
-    <Knockback>k__BackingField: 15
+    <Knockback>k__BackingField: 5
   - <AnimationName>k__BackingField: Roaring
     <TransitionDuration>k__BackingField: 0.1
     <ComboStateIndex>k__BackingField: 0
@@ -2291,7 +2291,7 @@ MonoBehaviour:
     <ForceTime>k__BackingField: 0.35
     <Force>k__BackingField: 5
     <Damage>k__BackingField: 15
-    <Knockback>k__BackingField: 20
+    <Knockback>k__BackingField: 10
   <WeaponDamage>k__BackingField:
   - {fileID: 2082177079160909339}
   - {fileID: 1557496535924120194}

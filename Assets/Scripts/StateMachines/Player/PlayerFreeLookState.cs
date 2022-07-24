@@ -10,6 +10,7 @@ public class PlayerFreeLookState : PlayerBaseState
         stateMachine.Animator.stabilizeFeet = true;
         SubscribeToInputEvents();
     }
+
     public override void Tick(float deltaTime)
     {
         if (stateMachine.InputReader.IsAttacking)
@@ -34,8 +35,14 @@ public class PlayerFreeLookState : PlayerBaseState
             stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, deltaTime);
             Speed = 0;
             return;
+        } else {
+            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
+            //current animation is not FreeLookBlendTreeHash set to FreeLookBlendTreeHash
+            // if(stateMachine.Animator.GetCurrentAnimatorStateInfo(0).fullPathHash != PlayerAnimatorHashes.FreeLookBlendTreeHash)
+            // {
+            //     stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration, 0);
+            // }
         }
-        stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
         FaceMovementDirection(movement,deltaTime);
     }
     

@@ -1,9 +1,9 @@
 using UnityEngine;
-
+using System.Collections;
 public abstract class PlayerBaseState : State
 {
     public float Speed = 1f;
-    
+
     public float AnimatorDampTime = 0.1f;
     public float CrossFadeDuration = 0.5f;
 
@@ -37,20 +37,27 @@ public abstract class PlayerBaseState : State
         CharacterRotation.z = 0;
 
         stateMachine.transform.rotation = CharacterRotation;
+        if (stateMachine.Controller.velocity.magnitude <= 0)
+        {
+            if (stateMachine.currentState is PlayerFreeLookState)
+            {
+                if (Mathf.Abs(stateMachine.InputReader.MouseValue.x) < 3) return;
+                if (!stateMachine.Animator.IsInTransition(0))
+                {
+                    int direction = 0;
+                    //turn right animation = 0
+                    if (stateMachine.InputReader.MouseValue.x < 0)
+                        direction = 1;
+                    stateMachine.Animator.SetFloat(PlayerAnimatorHashes.TurningDirectionHash, direction, AnimatorDampTime, 0);
+                }
+                AnimatorStateInfo currentInfo = stateMachine.Animator.GetCurrentAnimatorStateInfo(0);
 
-        //turn right animation = 0
-        if(Camera.main.transform.transform.rotation.x > 0)
-        {
-            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, 0);
-        }
-        //turn left animation = 1
-        else
-        {
-            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, 0);
-        }
-        if (!stateMachine.Animator.IsInTransition(0))
-        {
-            stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.TurningBlendTreeHash, CrossFadeDuration);
+                //when turning ends set to FreeLookBlendTreeHash
+                if (currentInfo.fullPathHash == PlayerAnimatorHashes.TurningBlendTreeHash && currentInfo.normalizedTime >= 1)
+                {
+                    stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration, 0);
+                }
+            }
         }
     }
 

@@ -55,13 +55,4 @@ public class EnemyChasingState : EnemyBaseState
 
         stateMachine.Agent.velocity = stateMachine.Controller.velocity;
     }
-
-    private bool IsInAttackRange()
-    {
-        //if (stateMachine.Player.IsDead) { return false; }
-
-        float playerDistanceSqr = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
-
-        return playerDistanceSqr <= stateMachine.AttackRange * stateMachine.AttackRange;
-    }
 }

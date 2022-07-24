@@ -39,8 +39,12 @@ public class PlayerBlockingState : PlayerBaseState
             return;
         }
         stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, 0.1f, deltaTime);
-        FaceTarget();
-        FaceMovementDirection(movement, deltaTime);
+        if (stateMachine.Targeter.CurrentTarget == null) { 
+            FaceMovementDirection(movement, deltaTime);
+        }
+        else{
+            FaceTarget();
+        }
     }
 
     private Vector3 CalculateMovement()
