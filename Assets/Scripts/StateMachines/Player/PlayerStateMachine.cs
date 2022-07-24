@@ -11,6 +11,7 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public ForceReceiver ForceReceiver { get; private set; }
     [field: SerializeField] public Attack[] Attacks { get; private set; }
     [field: SerializeField] public WeaponDamage WeaponDamage { get; private set; }
+    [field: SerializeField] public ShieldDefense ShieldDefense { get; private set; }
     [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public Ragdoll Ragdoll { get; private set; }
     public Transform MainCameraTransform  { get; private set; }
@@ -40,7 +41,8 @@ public class PlayerStateMachine : StateMachine
 
     private void HandleTakeDamage()
     {
-        SwitchState(new PlayerImpactState(this));
+        if(!ShieldDefense.IsActive)
+            SwitchState(new PlayerImpactState(this));
     }
 
     private void HandleDie()

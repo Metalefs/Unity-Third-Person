@@ -17,11 +17,13 @@ public class PlayerAttackingState : PlayerBaseState
     {
         stateMachine.WeaponDamage.SetAttack(attack.Damage, attack.Knockback);
         stateMachine.Animator.CrossFadeInFixedTime(attack.AnimationName, attack.TransitionDuration);
+        SubscribeToInputEvents();
     }
 
     public override void Tick(float deltaTime)
     {
-        Movement(deltaTime);
+        //Movement(deltaTime);
+        Move(deltaTime);
 
         float normalizedTime = GetNormalizedTime(stateMachine.Animator);
 
@@ -36,6 +38,7 @@ public class PlayerAttackingState : PlayerBaseState
             if (stateMachine.InputReader.IsAttacking)
             {
                 TryComboAttack(normalizedTime);
+                return;
             }
         }
         else
@@ -43,16 +46,19 @@ public class PlayerAttackingState : PlayerBaseState
             if (stateMachine.lastState is not PlayerAttackingState)
             {
                 stateMachine.SwitchState(stateMachine.lastState);
+                return;
             }
             else
             {
                 if (stateMachine.Targeter.CurrentTarget != null)
                 {
                     stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+                    return;
                 }
                 else
                 {
                     stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+                    return;
                 }
             }
         }

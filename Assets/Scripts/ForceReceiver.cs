@@ -5,6 +5,7 @@ public class ForceReceiver : MonoBehaviour
 {
     [SerializeField] private CharacterController Controller;
     [SerializeField] private NavMeshAgent Agent;
+    [SerializeField] private ShieldDefense ShieldDefense;
     [SerializeField] private float Drag = 0.3f;
     private float VerticalVelocity;
     private Vector3 Impact;
@@ -13,6 +14,10 @@ public class ForceReceiver : MonoBehaviour
 
     private void Update()
     {
+        if(!Controller.enabled){
+            Impact = Vector3.zero;
+            return;
+        }
         if (VerticalVelocity < 0f && Controller.isGrounded)
         {
             VerticalVelocity = Physics.gravity.y * Time.deltaTime;
@@ -21,7 +26,6 @@ public class ForceReceiver : MonoBehaviour
         {
             VerticalVelocity += Physics.gravity.y * Time.deltaTime;
         }
-
         Impact = Vector3.SmoothDamp(Impact, Vector3.zero, ref DampingVelocity, Drag);
         if (Agent != null)
         {
@@ -35,6 +39,9 @@ public class ForceReceiver : MonoBehaviour
 
     public void AddForce(Vector3 force)
     {
+        if(ShieldDefense != null && ShieldDefense.IsActive){
+            force = ShieldDefense.ReduceKnockback(ref force);
+        }
         Impact += force;
         if (Agent != null)
         {

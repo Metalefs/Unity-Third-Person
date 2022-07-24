@@ -22,12 +22,14 @@ public class WeaponDamage : MonoBehaviour
 
         if (alreadyCollidedWith.Contains(other)) { return; }
 
-        Debug.Log($"{myCollider.name} hit {other.name}");
-
         alreadyCollidedWith.Add(other);
 
         if (other.TryGetComponent<Health>(out Health health))
         {
+            if (other.TryGetComponent<ShieldDefense>(out ShieldDefense defense))
+            {
+                defense.ReduceDamage(ref damage);
+            }
             health.DealDamage(damage);
         }
 

@@ -2281,7 +2281,7 @@ MonoBehaviour:
     <ComboStateIndex>k__BackingField: 0
     <ComboAttackTime>k__BackingField: 0.5
     <ForceTime>k__BackingField: 0.35
-    <Force>k__BackingField: 10
+    <Force>k__BackingField: 5
     <Damage>k__BackingField: 15
     <Knockback>k__BackingField: 15
   - <AnimationName>k__BackingField: Roaring
@@ -2289,7 +2289,7 @@ MonoBehaviour:
     <ComboStateIndex>k__BackingField: 0
     <ComboAttackTime>k__BackingField: 0.5
     <ForceTime>k__BackingField: 0.35
-    <Force>k__BackingField: 10
+    <Force>k__BackingField: 5
     <Damage>k__BackingField: 15
     <Knockback>k__BackingField: 20
   <WeaponDamage>k__BackingField:
@@ -2358,6 +2358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Controller: {fileID: 1748007801690122768}
   Agent: {fileID: 7604035144610588715}
+  ShieldDefense: {fileID: 0}
   Drag: 0.1
 --- !u!114 &4247302005251612066
 MonoBehaviour:

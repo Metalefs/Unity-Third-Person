@@ -8,6 +8,7 @@ public class PlayerFreeLookState : PlayerBaseState
     {
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
         stateMachine.Animator.stabilizeFeet = true;
+        SubscribeToInputEvents();
     }
     public override void Tick(float deltaTime)
     {

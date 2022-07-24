@@ -12,6 +12,7 @@ public class PlayerImpactState : PlayerBaseState
     public override void Enter()
     {
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.ImpactHash, CrossFadeDuration);
+        SubscribeToInputEvents();
     }
 
     public override void Tick(float deltaTime)
@@ -26,5 +27,7 @@ public class PlayerImpactState : PlayerBaseState
         }
     }
 
-    public override void Exit() { }
+    public override void Exit() {
+        UnsubscribeFromInputEvents();
+    }
 }

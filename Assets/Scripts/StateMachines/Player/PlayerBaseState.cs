@@ -13,8 +13,6 @@ public abstract class PlayerBaseState : State
     public PlayerBaseState(PlayerStateMachine stateMachine)
     {
         this.stateMachine = stateMachine;
-
-        SubscribeToInputEvents();
     }
 
     public void SubscribeToInputEvents()
@@ -39,7 +37,21 @@ public abstract class PlayerBaseState : State
         CharacterRotation.z = 0;
 
         stateMachine.transform.rotation = CharacterRotation;
-        stateMachine.Targeter.SelectTarget();
+
+        //turn right animation = 0
+        if(Camera.main.transform.transform.rotation.x > 0)
+        {
+            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, 0);
+        }
+        //turn left animation = 1
+        else
+        {
+            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, 0);
+        }
+        if (!stateMachine.Animator.IsInTransition(0))
+        {
+            stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.TurningBlendTreeHash, CrossFadeDuration);
+        }
     }
 
     protected void Move(float deltaTime)
@@ -54,6 +66,7 @@ public abstract class PlayerBaseState : State
 
     public void FaceMovementDirection(Vector3 movement, float deltaTime)
     {
+        if (stateMachine.currentState is PlayerTargetingState) return;
         if (movement == Vector3.zero) return;
         Quaternion targetRotation = Quaternion.LookRotation(movement);
         stateMachine.transform.rotation = Quaternion.Slerp(stateMachine.transform.rotation, targetRotation, deltaTime * stateMachine.RotationDamping);
@@ -70,8 +83,7 @@ public abstract class PlayerBaseState : State
 
     public void OnTarget()
     {
-        Debug.Log(stateMachine.currentState.GetType().Name + ": OnTarget");
-        if (stateMachine.currentState is PlayerTargetingState || stateMachine.currentState is PlayerAttackingState)
+        if (stateMachine.currentState is PlayerTargetingState)
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
         else
             stateMachine.SwitchState(new PlayerTargetingState(stateMachine));

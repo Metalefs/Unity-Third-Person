@@ -30,7 +30,7 @@ public class Health : MonoBehaviour
         if (health == 0) { return; }
 
         if (isInvulnerable) { return; }
-
+        Debug.Log($"{name} took {damage} damage");
         health = Mathf.Max(health - damage, 0);
 
         OnTakeDamage?.Invoke();

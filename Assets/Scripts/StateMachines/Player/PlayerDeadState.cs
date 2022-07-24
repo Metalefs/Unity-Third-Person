@@ -15,7 +15,7 @@ public class PlayerDeadState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        FaceMovementDirection( Vector3.forward,deltaTime );
+        Move(Vector3.zero,deltaTime);
     }
 
     public override void Exit()

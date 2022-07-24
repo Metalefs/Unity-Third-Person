@@ -8,7 +8,9 @@ public class PlayerBlockingState : PlayerBaseState
 
     public override void Enter()
     {
+        stateMachine.ShieldDefense.IsActive = true;
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.BlockingBlendTreeHash, 0.1f, 0);
+        SubscribeToInputEvents();
     }
 
     public override void Tick(float deltaTime)
@@ -58,6 +60,7 @@ public class PlayerBlockingState : PlayerBaseState
     
     public override void Exit()
     {
+        stateMachine.ShieldDefense.IsActive = false;
         UnsubscribeFromInputEvents();
     }
 }
