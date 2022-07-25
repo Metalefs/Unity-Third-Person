@@ -9,6 +9,7 @@ public class PlayerFreeLookState : PlayerBaseState
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
         stateMachine.Animator.stabilizeFeet = true;
         SubscribeToInputEvents();
+        stateMachine.InputReader.JumpEvent += OnJump;
     }
 
     public override void Tick(float deltaTime)
@@ -62,6 +63,14 @@ public class PlayerFreeLookState : PlayerBaseState
 
     public override void Exit()
     {
+        stateMachine.InputReader.JumpEvent -= OnJump;
         UnsubscribeFromInputEvents();
+    }
+
+    
+    protected void OnJump()
+    {
+       if (stateMachine.GroundRayCast.IsGrounded())
+        stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
     }
 }

@@ -8,5 +8,8 @@ public static class PlayerAnimatorHashes {
     public static int FreeLookBlendTreeHash = Animator.StringToHash("FreeLookBlendTree");    
     public static int ImpactHash = Animator.StringToHash("Impact1");
     public static int DeadStateHash = Animator.StringToHash("Dead");
+    public static int JumpHash = Animator.StringToHash("Jump");
+    public static int FallingIdleHash = Animator.StringToHash("Falling Idle");
+    public static int FallingToLandingHash = Animator.StringToHash("Falling To Landing");
 
 } 

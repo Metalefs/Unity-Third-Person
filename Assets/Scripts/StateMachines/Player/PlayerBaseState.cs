@@ -3,7 +3,8 @@ using System.Collections;
 public abstract class PlayerBaseState : State
 {
     public float Speed = 1f;
-
+    protected Vector2 dodgingDirectionInput;
+    protected float remainingDodgeTime;
     public float AnimatorDampTime = 0.1f;
     public float CrossFadeDuration = 0.5f;
 
@@ -17,16 +18,16 @@ public abstract class PlayerBaseState : State
 
     public void SubscribeToInputEvents()
     {
-        //stateMachine.InputReader.JumpEvent += OnJump;
         stateMachine.InputReader.LookEvent += OnLook;
         stateMachine.InputReader.TargetEvent += OnTarget;
+        stateMachine.InputReader.DodgeEvent += OnDodge;
     }
 
     public void UnsubscribeFromInputEvents()
     {
-        //stateMachine.InputReader.JumpEvent -= OnJump;        
         stateMachine.InputReader.LookEvent -= OnLook;
         stateMachine.InputReader.TargetEvent -= OnTarget;
+        stateMachine.InputReader.DodgeEvent -= OnDodge;
     }
 
     private void OnLook()
@@ -61,6 +62,16 @@ public abstract class PlayerBaseState : State
         }
     }
 
+    private void OnDodge()
+    {
+        if (Time.time - stateMachine.PreviousDodgeTime < stateMachine.DodgeCooldown) { return; }
+
+        stateMachine.SetDodgeTime(Time.time);
+        dodgingDirectionInput = stateMachine.InputReader.MovementValue;
+        remainingDodgeTime = stateMachine.DodgeDuration;
+    }
+
+
     protected void Move(float deltaTime)
     {
         Move(Vector3.zero, deltaTime);
@@ -70,6 +81,7 @@ public abstract class PlayerBaseState : State
     {
         stateMachine.Controller.Move((motion + stateMachine.ForceReceiver.Movement) * deltaTime);
     }
+
 
     public void FaceMovementDirection(Vector3 movement, float deltaTime)
     {
