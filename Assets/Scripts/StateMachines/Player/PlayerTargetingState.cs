@@ -12,6 +12,7 @@ public class PlayerTargetingState : PlayerBaseState
     public override void Enter()
     {
         stateMachine.InputReader.JumpEvent += OnJump;
+        stateMachine.InputReader.DodgeEvent += OnDodge;
         SubscribeToInputEvents();
         stateMachine.Animator.CrossFadeInFixedTime(TargetingBlendTreeHash, CrossFadeDuration);
     }
@@ -26,7 +27,7 @@ public class PlayerTargetingState : PlayerBaseState
 
         if (stateMachine.InputReader.IsAttacking)
         {
-            stateMachine.SwitchState(new PlayerAttackingState(stateMachine, 0));
+            stateMachine.SwitchState(new PlayerAttackingState(stateMachine, 0, true));
             return;
         }
 
@@ -36,7 +37,7 @@ public class PlayerTargetingState : PlayerBaseState
             return;
         }
 
-        Vector3 movement = CalculateMovement(deltaTime);
+        Vector3 movement = CalculateMovement();
         stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * stateMachine.TargetingMovementSpeed) * deltaTime);
 
         UpdateAnimator(deltaTime);
@@ -47,25 +48,16 @@ public class PlayerTargetingState : PlayerBaseState
     public override void Exit()
     {
         stateMachine.InputReader.JumpEvent -= OnJump;
+        stateMachine.InputReader.DodgeEvent -= OnDodge;
         UnsubscribeFromInputEvents();
     }
 
-    private Vector3 CalculateMovement(float deltaTime)
+    private Vector3 CalculateMovement()
     {
         Vector3 movement = new Vector3();
-        if (remainingDodgeTime > 0f)
-        {
-            movement += stateMachine.transform.right * dodgingDirectionInput.x * stateMachine.DodgeDistance / stateMachine.DodgeDuration;
-            movement += stateMachine.transform.forward * dodgingDirectionInput.y * stateMachine.DodgeDistance / stateMachine.DodgeDuration;
-
-            remainingDodgeTime = Mathf.Max(remainingDodgeTime - deltaTime, 0f);
-        }
-        else
-        {
-            movement += stateMachine.transform.right * stateMachine.InputReader.MovementValue.x;
-            movement += stateMachine.transform.forward * stateMachine.InputReader.MovementValue.y;
-        }
-
+        
+        movement += stateMachine.transform.right * stateMachine.InputReader.MovementValue.x;
+        movement += stateMachine.transform.forward * stateMachine.InputReader.MovementValue.y;
 
         return movement;
     }
@@ -93,10 +85,12 @@ public class PlayerTargetingState : PlayerBaseState
         }
     }
 
-    
     protected void OnJump()
     {
-        stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+        if (stateMachine.GroundRayCast.IsGrounded())
+        {
+            stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+        }
     }
 
 }

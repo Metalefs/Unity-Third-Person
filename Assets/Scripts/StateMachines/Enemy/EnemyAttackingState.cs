@@ -22,7 +22,7 @@ public class EnemyAttackingState : EnemyBaseState
     {
         Move(deltaTime);
 
-        float normalizedTime = GetNormalizedTime(stateMachine.Animator);
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator,"Attack");
 
         if (normalizedTime >= previousFrameTime && normalizedTime < 1f)
         {

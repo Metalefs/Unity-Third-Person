@@ -11,12 +11,11 @@ public class PlayerLandingState : PlayerBaseState
     {
         momentum = stateMachine.Controller.velocity;
         momentum.y = 0f;
-
+        Debug.Log("Landing momentum: " + momentum);
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FallingToLandingHash, CrossFadeDuration);
 
-        //stateMachine.LedgeDetector.OnLedgeDetect += HandleLedgeDetect;
+        stateMachine.LedgeDetector.OnLedgeDetect += HandleLedgeDetect;
     }
-
 
     public override void Tick(float deltaTime)
     {
@@ -24,14 +23,14 @@ public class PlayerLandingState : PlayerBaseState
         ReturnToLocomotion();
     }
 
-
    public override void Exit()
     {
-        //stateMachine.LedgeDetector.OnLedgeDetect -= HandleLedgeDetect;
+        stateMachine.LedgeDetector.OnLedgeDetect -= HandleLedgeDetect;
     }
 
-    // private void HandleLedgeDetect(Vector3 ledgeForward, Vector3 closestPoint)
-    // {
-    //     stateMachine.SwitchState(new PlayerHangingState(stateMachine, ledgeForward, closestPoint));
-    // }
+    private void HandleLedgeDetect(Vector3 ledgeForward, Vector3 closestPoint)
+    {
+        Debug.Log("Ledge detected");
+        stateMachine.SwitchState(new PlayerHangingState(stateMachine, ledgeForward, closestPoint));
+    } 
 }

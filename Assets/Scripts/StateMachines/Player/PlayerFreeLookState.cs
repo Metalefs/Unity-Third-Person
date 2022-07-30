@@ -2,14 +2,23 @@ using UnityEngine;
 
 public class PlayerFreeLookState : PlayerBaseState
 {
-    public PlayerFreeLookState(PlayerStateMachine stateMachine) : base(stateMachine){}
-    
+    private bool shouldFade = true;
+    public PlayerFreeLookState(PlayerStateMachine stateMachine, bool shouldFade = true) : base(stateMachine)
+    {
+        this.shouldFade = shouldFade;
+    }
+
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
-        stateMachine.Animator.stabilizeFeet = true;
+        stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0);
+        if (shouldFade)
+            stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
+        else
+            stateMachine.Animator.Play(PlayerAnimatorHashes.FreeLookBlendTreeHash);
+
         SubscribeToInputEvents();
         stateMachine.InputReader.JumpEvent += OnJump;
+        stateMachine.InputReader.DodgeEvent += OnDodge;
     }
 
     public override void Tick(float deltaTime)
@@ -27,27 +36,30 @@ public class PlayerFreeLookState : PlayerBaseState
         }
 
         Vector3 movement = CalculateMovement();
-        if(Speed < stateMachine.FreeLookMovementSpeed)
-        {
+        if (Speed < stateMachine.FreeLookMovementSpeed)
             Speed += deltaTime * 4;
-        }
-        stateMachine.Controller.Move((stateMachine.ForceReceiver.Movement + movement * Speed) * deltaTime);
-        if(stateMachine.InputReader.MovementValue == Vector2.zero){
+
+        Move(movement * stateMachine.FreeLookMovementSpeed, deltaTime);
+        if (stateMachine.InputReader.MovementValue == Vector2.zero)
+        {
             stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, deltaTime);
             Speed = 0;
             return;
-        } else {
-            stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
-            //current animation is not FreeLookBlendTreeHash set to FreeLookBlendTreeHash
-            // if(stateMachine.Animator.GetCurrentAnimatorStateInfo(0).fullPathHash != PlayerAnimatorHashes.FreeLookBlendTreeHash)
-            // {
-            //     stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration, 0);
-            // }
         }
-        FaceMovementDirection(movement,deltaTime);
+        stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
+        FaceMovementDirection(movement, deltaTime);
     }
-    
-    private Vector3 CalculateMovement(){
+
+    protected void OnJump()
+    {
+        if (stateMachine.GroundRayCast.IsGrounded())
+        {    
+            stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+        }
+    }
+
+    private Vector3 CalculateMovement()
+    {
         Vector3 cameraForward = stateMachine.MainCameraTransform.forward;
         Vector3 cameraRight = stateMachine.MainCameraTransform.right;
 
@@ -57,20 +69,14 @@ public class PlayerFreeLookState : PlayerBaseState
         cameraForward.Normalize();
         cameraRight.Normalize();
 
-        return cameraForward * stateMachine.InputReader.MovementValue.y 
+        return cameraForward * stateMachine.InputReader.MovementValue.y
         + cameraRight * stateMachine.InputReader.MovementValue.x;
     }
 
     public override void Exit()
     {
         stateMachine.InputReader.JumpEvent -= OnJump;
+        stateMachine.InputReader.DodgeEvent -= OnDodge;
         UnsubscribeFromInputEvents();
-    }
-
-    
-    protected void OnJump()
-    {
-       if (stateMachine.GroundRayCast.IsGrounded())
-        stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
     }
 }

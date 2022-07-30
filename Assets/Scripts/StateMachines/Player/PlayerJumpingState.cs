@@ -4,26 +4,23 @@ using UnityEngine;
 
 public class PlayerJumpingState : PlayerBaseState
 {
-    private Vector2 Momentum;
+    private Vector3 momentum;
 
-    public PlayerJumpingState(PlayerStateMachine stateMachine) : base(stateMachine) { }
+    public PlayerJumpingState(PlayerStateMachine stateMachine) : base(stateMachine) {}
 
     public override void Enter()
     {
         stateMachine.ForceReceiver.Jump(stateMachine.JumpForce);
-
-        Momentum = stateMachine.Controller.velocity;
-        Momentum.y = 0f;
+        momentum = stateMachine.Controller.velocity;
+        momentum.y = 0f;
 
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.JumpHash, CrossFadeDuration);
-
-        //stateMachine.LedgeDetector.OnLedgeDetect += HandleLedgeDetect;
+        stateMachine.LedgeDetector.OnLedgeDetect += HandleLedgeDetect;
     }
 
     public override void Tick(float deltaTime)
     {
-        Move(Momentum, deltaTime);
-        Debug.Log("Jumping: "+stateMachine.Controller.velocity.y );
+        Move(momentum, deltaTime);
         if (stateMachine.Controller.velocity.y <= 0)
         {
             stateMachine.SwitchState(new PlayerFreeFallingState(stateMachine));
@@ -33,15 +30,15 @@ public class PlayerJumpingState : PlayerBaseState
         FaceTarget();
     }
 
-
     public override void Exit()
     {
-        //stateMachine.LedgeDetector.OnLedgeDetect -= HandleLedgeDetect;
+        stateMachine.LedgeDetector.OnLedgeDetect -= HandleLedgeDetect;
     }
 
-    // private void HandleLedgeDetect(Vector3 ledgeForward, Vector3 closestPoint)
-    // {
-    //     stateMachine.SwitchState(new PlayerHangingState(stateMachine, ledgeForward, closestPoint));
-    // }   
+    private void HandleLedgeDetect(Vector3 ledgeForward, Vector3 closestPoint)
+    {
+        Debug.Log("Ledge detected");
+        stateMachine.SwitchState(new PlayerHangingState(stateMachine, ledgeForward, closestPoint));
+    }   
 
 }

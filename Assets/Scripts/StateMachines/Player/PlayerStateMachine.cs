@@ -9,7 +9,6 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public float RotationDamping { get; private set; }
     [field: SerializeField] public float DodgeDuration { get; private set; }
     [field: SerializeField] public float DodgeDistance { get; private set; }
-    [field: SerializeField] public float DodgeCooldown { get; private set; }
     [field: SerializeField] public float JumpForce { get; private set; }
     [field: SerializeField] public Targeter Targeter { get; private set; }
     [field: SerializeField] public ForceReceiver ForceReceiver { get; private set; }
@@ -19,12 +18,15 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public Ragdoll Ragdoll { get; private set; }
     [field: SerializeField] public GroundRayCast GroundRayCast { get; private set; }
+    [field: SerializeField] public LedgeDetector LedgeDetector { get; private set; }
     public Transform MainCameraTransform  { get; private set; }
     public bool IsDead = false;
     public float PreviousDodgeTime {get; private set;} = Mathf.NegativeInfinity;
     
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         MainCameraTransform = Camera.main.transform;
         SwitchState(new PlayerFreeLookState(this));
     }
@@ -57,14 +59,10 @@ public class PlayerStateMachine : StateMachine
         IsDead = true;
         if(Animator.HasState(0, PlayerAnimatorHashes.DeadStateHash))
         {
-            Animator.Play(PlayerAnimatorHashes.DeadStateHash, 0, 0);
+            Animator.Play(PlayerAnimatorHashes.DeadStateHash);
+            Debug.Log("Dead state");
         }
         Targeter.enabled = false;
         SwitchState(new PlayerDeadState(this));
-    }
-
-    public void SetDodgeTime(float time)
-    {
-        PreviousDodgeTime = time;
     }
 }

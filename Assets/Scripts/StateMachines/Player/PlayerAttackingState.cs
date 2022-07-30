@@ -6,9 +6,10 @@ public class PlayerAttackingState : PlayerBaseState
 {
     private float previousFrameTime;
     private bool alreadyAppliedForce;
+    private bool faceTarget;
     private Attack attack;
 
-    public PlayerAttackingState(PlayerStateMachine stateMachine, int attackIndex) : base(stateMachine)
+    public PlayerAttackingState(PlayerStateMachine stateMachine, int attackIndex, bool faceTarget = false) : base(stateMachine)
     {
         attack = stateMachine.Attacks[attackIndex];
     }
@@ -25,7 +26,7 @@ public class PlayerAttackingState : PlayerBaseState
         //Movement(deltaTime);
         Move(deltaTime);
 
-        float normalizedTime = GetNormalizedTime(stateMachine.Animator);
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator,"Attack");
 
         if (normalizedTime >= previousFrameTime && normalizedTime < 1f)
         {
@@ -62,7 +63,10 @@ public class PlayerAttackingState : PlayerBaseState
                 }
             }
         }
-
+        if(faceTarget)
+        {
+            FaceTarget();
+        }
         previousFrameTime = normalizedTime;
     }
 
@@ -115,7 +119,8 @@ public class PlayerAttackingState : PlayerBaseState
             new PlayerAttackingState
             (
                 stateMachine,
-                attack.ComboStateIndex
+                attack.ComboStateIndex,
+                faceTarget
             )
         );
     }
