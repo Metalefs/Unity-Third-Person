@@ -8,11 +8,7 @@ public class LedgeDetector : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Ledge"))
-        {
-            Vector3 ledgeForward = other.transform.forward;
-            Vector3 closestPoint = other.ClosestPointOnBounds(other.transform.position);
-            OnLedgeDetect?.Invoke(ledgeForward, closestPoint);
-        }
+        OnLedgeDetect?.Invoke(other.transform.forward, other.ClosestPointOnBounds(transform.position));
     }
+
 }

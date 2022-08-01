@@ -13,7 +13,8 @@ public class PlayerHangingState : PlayerBaseState
 
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.HangingHash, CrossFadeDuration);
+        Debug.Log("Entering Hanging State");
+        stateMachine.Animator.Play(PlayerAnimatorHashes.HangingHash);
         stateMachine.Controller.enabled = false;
         stateMachine.transform.position = closestPoint - (stateMachine.LedgeDetector.transform.position - stateMachine.transform.position);
         stateMachine.Controller.enabled = true;
@@ -33,7 +34,7 @@ public class PlayerHangingState : PlayerBaseState
             stateMachine.SwitchState(new PlayerPullUpState(stateMachine));
             return;
         }
-        Move(deltaTime);
+        //Move(deltaTime);
     }
 
     public override void Exit()

@@ -4,47 +4,57 @@ using UnityEngine.AI;
 public class ForceReceiver : MonoBehaviour
 {
     [SerializeField] private CharacterController Controller;
+    [SerializeField] private Rigidbody Body;
     [SerializeField] private GroundRayCast GroundRayCast;
     [SerializeField] private NavMeshAgent Agent;
     [SerializeField] private ShieldDefense ShieldDefense;
     [SerializeField] private float Drag = 0.3f;
-    private float VerticalVelocity;
-    private Vector3 Impact;
-    private Vector3 DampingVelocity;
-    public Vector3 Movement => Impact + Vector3.up * VerticalVelocity;
+    private Vector3 dampingVelocity;
+    private Vector3 impact;
+    private float verticalVelocity;
+    public float gravityScale = 5;
+
+
+    public Vector3 Movement => impact + Vector3.up * verticalVelocity;
 
     private void Update()
-    {        
-        if (VerticalVelocity < 0f && (Controller.isGrounded || GroundRayCast.IsGrounded()))
+    {
+        if (verticalVelocity < 0f && GroundRayCast.IsGrounded())
         {
-            VerticalVelocity = Physics.gravity.y * Time.deltaTime;
+            verticalVelocity = Physics.gravity.y * Time.deltaTime;
         }
         else
         {
-            VerticalVelocity += Physics.gravity.y * Time.deltaTime;
+            verticalVelocity += Physics.gravity.y * Time.deltaTime;
         }
 
-        Impact = Vector3.SmoothDamp(Impact, Vector3.zero, ref DampingVelocity, Drag);
+        impact = Vector3.SmoothDamp(impact, Vector3.zero, ref dampingVelocity, Drag);
 
         if (Agent != null)
         {
-            if (Impact.sqrMagnitude < 0.2f * 0.2f)
+            if (impact.sqrMagnitude < 0.2f * 0.2f)
             {
-                Impact = Vector3.zero;
+                impact = Vector3.zero;
                 Agent.enabled = true;
             }
         }
     }
 
+    private void FixedUpdate()
+    {   
+        if(Body != null)
+        Body.AddForce(Physics.gravity * (gravityScale - 1) * Body.mass);
+    }
+
     public void Reset()
     {
-        Impact = Vector3.zero;
-        VerticalVelocity = 0f;
+        impact = Vector3.zero;
+        verticalVelocity = 0f;
     }
 
     public void AddForce(Vector3 force)
     {
-        Impact += force;
+        impact += force;
         if (Agent != null)
         {
             Agent.enabled = false;
@@ -53,7 +63,9 @@ public class ForceReceiver : MonoBehaviour
 
     public void Jump(float jumpForce)
     {
-        VerticalVelocity += jumpForce;
+        verticalVelocity += jumpForce;
+        if(Body != null)
+            Body.AddForce(Vector2.up * jumpForce, ForceMode.Impulse);
     }
 
 }

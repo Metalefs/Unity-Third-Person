@@ -23,8 +23,8 @@ public class PlayerAttackingState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        //Movement(deltaTime);
-        Move(deltaTime);
+        Movement(deltaTime);
+        //Move(deltaTime);
 
         float normalizedTime = GetNormalizedTime(stateMachine.Animator,"Attack");
 

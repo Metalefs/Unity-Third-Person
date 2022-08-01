@@ -11,7 +11,6 @@ public class PlayerLandingState : PlayerBaseState
     {
         momentum = stateMachine.Controller.velocity;
         momentum.y = 0f;
-        Debug.Log("Landing momentum: " + momentum);
         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FallingToLandingHash, CrossFadeDuration);
 
         stateMachine.LedgeDetector.OnLedgeDetect += HandleLedgeDetect;
@@ -30,7 +29,7 @@ public class PlayerLandingState : PlayerBaseState
 
     private void HandleLedgeDetect(Vector3 ledgeForward, Vector3 closestPoint)
     {
-        Debug.Log("Ledge detected");
+        Debug.Log("Ledge detected in landing state");
         stateMachine.SwitchState(new PlayerHangingState(stateMachine, ledgeForward, closestPoint));
     } 
 }

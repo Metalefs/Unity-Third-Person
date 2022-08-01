@@ -23,7 +23,6 @@ public class PlayerBlockingState : PlayerBaseState
         }
          if(stateMachine.InputReader.MovementValue == Vector2.zero){
             stateMachine.Animator.SetFloat(PlayerAnimatorHashes.BlockingSpeedHash, 0, AnimatorDampTime, deltaTime);
-            Speed = 0;
             return;
         }
         stateMachine.Animator.SetFloat(PlayerAnimatorHashes.BlockingSpeedHash, 1, AnimatorDampTime, deltaTime);

@@ -1781,7 +1781,7 @@ MonoBehaviour:
   <RotationDamping>k__BackingField: 10
   <DodgeDuration>k__BackingField: 0.6
   <DodgeDistance>k__BackingField: 3
-  <JumpForce>k__BackingField: 6
+  <JumpForce>k__BackingField: 15
   <Targeter>k__BackingField: {fileID: 1797423640337829742}
   <ForceReceiver>k__BackingField: {fileID: 3400261891117930524}
   <Attacks>k__BackingField:
@@ -1861,7 +1861,7 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 1.75
+  m_Height: 1.78
   m_Radius: 0.36
   m_SlopeLimit: 45
   m_StepOffset: 1
@@ -1935,7 +1935,7 @@ MeshCollider:
   m_GameObject: {fileID: 3974022487468832594}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
@@ -1954,7 +1954,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Collider: {fileID: 5416497126185698854}
   offset: 0.19
-  radius: 0.5
+  radius: 0.25
 --- !u!1 &4177330340289448005
 GameObject:
   m_ObjectHideFlags: 0
@@ -3876,8 +3876,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8830207535885444508}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.786, z: 0.277}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1.786, z: 0.49}
+  m_LocalScale: {x: 1, y: 1, z: 1.1866}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4354207647781498344}

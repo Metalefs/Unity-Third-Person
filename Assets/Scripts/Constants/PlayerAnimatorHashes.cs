@@ -13,7 +13,7 @@ public static class PlayerAnimatorHashes {
     public static int DeadStateHash = Animator.StringToHash("Dead");
     public static int JumpHash = Animator.StringToHash("Jump");
     public static int HangingHash = Animator.StringToHash("Hanging");
-    public static int PullupHash = Animator.StringToHash("Pullup");
+    public static int PullupHash = Animator.StringToHash("Climbing");
     public static int FallingIdleHash = Animator.StringToHash("Falling Idle");
     public static int FallingToLandingHash = Animator.StringToHash("Falling To Landing");
 

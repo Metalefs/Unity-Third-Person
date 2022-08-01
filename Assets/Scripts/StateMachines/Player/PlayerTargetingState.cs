@@ -89,7 +89,9 @@ public class PlayerTargetingState : PlayerBaseState
     {
         if (stateMachine.GroundRayCast.IsGrounded())
         {
-            stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+            // keep forward movement while in air
+            var movement = CalculateMovement();
+            stateMachine.SwitchState(new PlayerJumpingState(stateMachine, false, movement));
         }
     }
 

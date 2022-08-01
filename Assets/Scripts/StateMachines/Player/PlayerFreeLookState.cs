@@ -36,14 +36,11 @@ public class PlayerFreeLookState : PlayerBaseState
         }
 
         Vector3 movement = CalculateMovement();
-        if (Speed < stateMachine.FreeLookMovementSpeed)
-            Speed += deltaTime * 4;
-
+        
         Move(movement * stateMachine.FreeLookMovementSpeed, deltaTime);
         if (stateMachine.InputReader.MovementValue == Vector2.zero)
         {
             stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 0, AnimatorDampTime, deltaTime);
-            Speed = 0;
             return;
         }
         stateMachine.Animator.SetFloat(PlayerAnimatorHashes.FreeLookSpeedHash, 1, AnimatorDampTime, deltaTime);
@@ -54,7 +51,9 @@ public class PlayerFreeLookState : PlayerBaseState
     {
         if (stateMachine.GroundRayCast.IsGrounded())
         {    
-            stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+            // keep forward movement while in air
+            var movement = CalculateMovement();
+            stateMachine.SwitchState(new PlayerJumpingState(stateMachine, false, movement));
         }
     }
 

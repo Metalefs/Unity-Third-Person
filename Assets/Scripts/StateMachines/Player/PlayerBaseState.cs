@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 public abstract class PlayerBaseState : State
 {
-    public float Speed = 1f;
     public float AnimatorDampTime = 0.1f;
     public float CrossFadeDuration = 0.5f;
     public PlayerStateMachine stateMachine;
@@ -23,38 +22,33 @@ public abstract class PlayerBaseState : State
     }
     private void OnLook()
     {
-        if (Speed > 0) return;
         var CharacterRotation = Camera.main.transform.transform.rotation;
         CharacterRotation.x = 0;
         CharacterRotation.z = 0;
-
-        stateMachine.transform.rotation = CharacterRotation;
-        if (stateMachine.Controller.velocity.magnitude <= 0)
-        {
-            if (stateMachine.currentState is PlayerFreeLookState)
-            {
-                if (Mathf.Abs(stateMachine.InputReader.MouseValue.x) < 3) return;
-                if (!stateMachine.Animator.IsInTransition(0))
-                {
-                    int direction = 0;
-                    //turn right animation = 0
-                    if (stateMachine.InputReader.MouseValue.x < 0)
-                        direction = 1;
-                    stateMachine.Animator.SetFloat(PlayerAnimatorHashes.TurningDirectionHash, direction, AnimatorDampTime, 0);
-                }
-                AnimatorStateInfo currentInfo = stateMachine.Animator.GetCurrentAnimatorStateInfo(0);
-
-                //when turning ends set to FreeLookBlendTreeHash
-                if (currentInfo.fullPathHash == PlayerAnimatorHashes.TurningBlendTreeHash && currentInfo.normalizedTime >= 1)
-                {
-                    stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration, 0);
-                }
-            }
-        }
+        stateMachine.transform.rotation = stateMachine.InputReader.MovementValue == Vector2.zero ?
+            CharacterRotation
+            :
+            Quaternion.Slerp(stateMachine.Controller.transform.rotation, CharacterRotation, AnimatorDampTime);
+        
+        // if (stateMachine.currentState is not PlayerFreeLookState) { return; }
+        // if (stateMachine.InputReader.MovementValue == Vector2.zero)
+        // {
+        //     if (GetNormalizedTime(stateMachine.Animator, "Turning") < 1f)
+        //     {
+        //         int direction = 0;
+        //         //turn right animation = 0
+        //         if (stateMachine.InputReader.MouseValue.x < 0)
+        //             direction = 1;
+        //         stateMachine.Animator.SetFloat(PlayerAnimatorHashes.TurningDirectionHash, direction, AnimatorDampTime, Time.deltaTime);
+        //         stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.TurningBlendTreeHash, CrossFadeDuration);
+        //     }
+        //     else
+        //     stateMachine.Animator.CrossFadeInFixedTime(PlayerAnimatorHashes.FreeLookBlendTreeHash, CrossFadeDuration);
+        // }
     }
     protected void OnDodge()
     {
-        if(stateMachine.InputReader.MouseValue == Vector2.zero)
+        if (stateMachine.InputReader.MouseValue == Vector2.zero)
             return;
         stateMachine.SwitchState(new PlayerDodgingState(stateMachine, stateMachine.InputReader.MovementValue));
     }
@@ -75,19 +69,14 @@ public abstract class PlayerBaseState : State
     }
     protected void FaceTarget()
     {
-        if (stateMachine.currentState is PlayerFreeLookState) return;
         if (stateMachine.Targeter.CurrentTarget == null) { return; }
+
         Vector3 lookPos = stateMachine.Targeter.CurrentTarget.transform.position - stateMachine.transform.position;
         lookPos.y = 0f;
+
         stateMachine.transform.rotation = Quaternion.LookRotation(lookPos);
     }
-    public void OnTarget()
-    {
-        if (stateMachine.currentState is PlayerTargetingState)
-            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
-        else
-            stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
-    }
+
     protected void ReturnToLocomotion()
     {
         if (stateMachine.Targeter.CurrentTarget != null)
@@ -98,5 +87,13 @@ public abstract class PlayerBaseState : State
         {
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
         }
+    }
+
+    public void OnTarget()
+    {
+        if (stateMachine.currentState is PlayerTargetingState)
+            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+        else
+            stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
     }
 }

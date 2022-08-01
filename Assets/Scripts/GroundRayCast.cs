@@ -6,7 +6,7 @@ public class GroundRayCast : MonoBehaviour
 {
     [SerializeField] private Collider Collider;
     [SerializeField] private float offset;
-    [SerializeField] private float radius;
+    [SerializeField] public float radius;
     public bool IsGrounded()
     {
         Debug.DrawRay(transform.position + Vector3.up * offset, Vector3.down * radius, Color.red);
