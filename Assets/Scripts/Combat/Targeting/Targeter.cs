@@ -2,89 +2,91 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
-
-public class Targeter : MonoBehaviour
+namespace Combat
 {
-     [SerializeField] private CinemachineTargetGroup cineTargetGroup;
-
-    private Camera mainCamera;
-    private List<Target> targets = new List<Target>();
-
-    public Target CurrentTarget { get; private set; }
-
-    private void Start()
+    public class Targeter : MonoBehaviour
     {
-        mainCamera = Camera.main;
-    }
+        [SerializeField] private CinemachineTargetGroup cineTargetGroup;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.TryGetComponent<Target>(out Target target)) { return; }
-        targets.Add(target);
-        target.OnDestroyed += RemoveTarget;
-    }
+        private Camera mainCamera;
+        private List<Target> targets = new List<Target>();
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.TryGetComponent<Target>(out Target target)) { return; }
+        public Target CurrentTarget { get; private set; }
 
-        RemoveTarget(target);
-    }
-
-    public bool SelectTarget()
-    {
-        if (targets.Count == 0) { return false; }
-
-        Target closestTarget = null;
-        float closestTargetDistance = Mathf.Infinity;
-        
-        foreach (Target target in targets)
+        private void Start()
         {
-            Vector2 viewPos = mainCamera.WorldToViewportPoint(target.transform.position);
-
-            if (!target.GetComponentInChildren<Renderer>().isVisible)
-            {
-                continue;
-            }
-
-            Vector2 toCenter = viewPos - new Vector2(0.5f, 0.5f);
-            if (toCenter.sqrMagnitude < closestTargetDistance)
-            {
-                closestTarget = target;
-                closestTargetDistance = toCenter.sqrMagnitude;
-            }
+            mainCamera = Camera.main;
         }
 
-        if (closestTarget == null) { return false; }
-
-        CurrentTarget = closestTarget;
-        if(cineTargetGroup.FindMember(CurrentTarget.transform) > 0)
+        private void OnTriggerEnter(Collider other)
         {
-            cineTargetGroup.RemoveMember(CurrentTarget.transform);
+            if (!other.TryGetComponent<Target>(out Target target)) { return; }
+            targets.Add(target);
+            target.OnDestroyed += RemoveTarget;
         }
-        cineTargetGroup.AddMember(CurrentTarget.transform, 1f, 2f);
 
-        return true;
-    }
-
-    public void Cancel()
-    {
-        if (CurrentTarget == null) { return; }
-
-        cineTargetGroup.RemoveMember(CurrentTarget.transform);
-        CurrentTarget = null;
-    }
-
-    private void RemoveTarget(Target target)
-    {
-        if (CurrentTarget == target)
+        private void OnTriggerExit(Collider other)
         {
+            if (!other.TryGetComponent<Target>(out Target target)) { return; }
+
+            RemoveTarget(target);
+        }
+
+        public bool SelectTarget()
+        {
+            if (targets.Count == 0) { return false; }
+
+            Target closestTarget = null;
+            float closestTargetDistance = Mathf.Infinity;
+
+            foreach (Target target in targets)
+            {
+                Vector2 viewPos = mainCamera.WorldToViewportPoint(target.transform.position);
+
+                if (!target.GetComponentInChildren<Renderer>().isVisible)
+                {
+                    continue;
+                }
+
+                Vector2 toCenter = viewPos - new Vector2(0.5f, 0.5f);
+                if (toCenter.sqrMagnitude < closestTargetDistance)
+                {
+                    closestTarget = target;
+                    closestTargetDistance = toCenter.sqrMagnitude;
+                }
+            }
+
+            if (closestTarget == null) { return false; }
+
+            CurrentTarget = closestTarget;
+            if (cineTargetGroup.FindMember(CurrentTarget.transform) > 0)
+            {
+                cineTargetGroup.RemoveMember(CurrentTarget.transform);
+            }
+            cineTargetGroup.AddMember(CurrentTarget.transform, 1f, 2f);
+
+            return true;
+        }
+
+        public void Cancel()
+        {
+            if (CurrentTarget == null) { return; }
+
             cineTargetGroup.RemoveMember(CurrentTarget.transform);
             CurrentTarget = null;
         }
 
-        target.OnDestroyed -= RemoveTarget;
-        targets.Remove(target);
-    }
+        private void RemoveTarget(Target target)
+        {
+            if (CurrentTarget == target)
+            {
+                cineTargetGroup.RemoveMember(CurrentTarget.transform);
+                CurrentTarget = null;
+            }
 
+            target.OnDestroyed -= RemoveTarget;
+            targets.Remove(target);
+        }
+
+    }
 }

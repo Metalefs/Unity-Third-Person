@@ -1,39 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Ragdoll : MonoBehaviour
+namespace Combat
 {
-    [SerializeField] private Animator Animator;
-    [SerializeField] private CharacterController Controller;
-    private Collider[] allColliders;
-    private Rigidbody[] allRigidBodies;
-
-    void Start()
+    public class Ragdoll : MonoBehaviour
     {
-        allColliders = GetComponentsInChildren<Collider>(true);
-        allRigidBodies = GetComponentsInChildren<Rigidbody>(true);
-        ToggleRagdoll(false);
-    }
+        [SerializeField] private Animator Animator;
+        [SerializeField] private CharacterController Controller;
+        private Collider[] allColliders;
+        private Rigidbody[] allRigidBodies;
 
-    public void ToggleRagdoll(bool isRagdoll)
-    {
-        foreach (Collider collider in allColliders)
+        void Start()
         {
-            if (collider.gameObject.CompareTag("Ragdoll"))
-            {
-                collider.enabled = isRagdoll;
-            }
+            allColliders = GetComponentsInChildren<Collider>(true);
+            allRigidBodies = GetComponentsInChildren<Rigidbody>(true);
+            ToggleRagdoll(false);
         }
-        foreach (Rigidbody rigidBody in allRigidBodies)
+
+        public void ToggleRagdoll(bool isRagdoll)
         {
-            if (rigidBody.gameObject.CompareTag("Ragdoll"))
+            foreach (Collider collider in allColliders)
             {
-                rigidBody.isKinematic = !isRagdoll;
-                rigidBody.useGravity = isRagdoll;
+                if (collider.gameObject.CompareTag("Ragdoll"))
+                {
+                    collider.enabled = isRagdoll;
+                }
             }
+            foreach (Rigidbody rigidBody in allRigidBodies)
+            {
+                if (rigidBody.gameObject.CompareTag("Ragdoll"))
+                {
+                    rigidBody.isKinematic = !isRagdoll;
+                    rigidBody.useGravity = isRagdoll;
+                }
+            }
+            Controller.enabled = !isRagdoll;
+            Animator.enabled = !isRagdoll;
         }
-        Controller.enabled = !isRagdoll;
-        Animator.enabled = !isRagdoll;
     }
 }

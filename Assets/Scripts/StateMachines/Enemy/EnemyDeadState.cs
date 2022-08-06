@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using Combat;
 public class EnemyDeadState : EnemyBaseState
 {
     public EnemyDeadState(EnemyStateMachine stateMachine) : base(stateMachine){}

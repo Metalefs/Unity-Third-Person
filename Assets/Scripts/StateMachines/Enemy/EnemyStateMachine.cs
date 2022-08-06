@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-
+using Combat;
 public class EnemyStateMachine : StateMachine
 {
     [field: SerializeField] public CharacterController Controller { get; private set; }

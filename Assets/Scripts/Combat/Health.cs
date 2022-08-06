@@ -1,44 +1,45 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-public class Health : MonoBehaviour
+namespace Combat
 {
-    [SerializeField] private int maxHealth = 100;
-
-    private int health;
-    private bool isInvulnerable;
-
-    public event Action OnTakeDamage;
-    public event Action OnDie;
-
-    public bool IsDead => health == 0;
-
-    private void Start()
+    public class Health : MonoBehaviour
     {
-        health = maxHealth;
-    }
+        [SerializeField] private int maxHealth = 100;
 
-    public void SetInvulnerable(bool isInvulnerable)
-    {
-        this.isInvulnerable = isInvulnerable;
-    }
+        private int health;
+        private bool isInvulnerable;
 
-    public void DealDamage(int damage)
-    {
-        if (health == 0) { return; }
+        public event Action OnTakeDamage;
+        public event Action OnDie;
 
-        if (isInvulnerable) { return; }
-        Debug.Log($"{name} took {damage} damage");
-        health = Mathf.Max(health - damage, 0);
+        public bool IsDead => health == 0;
 
-        OnTakeDamage?.Invoke();
-
-        if (health == 0)
+        private void Start()
         {
-            OnDie?.Invoke();
+            health = maxHealth;
+        }
+
+        public void SetInvulnerable(bool isInvulnerable)
+        {
+            this.isInvulnerable = isInvulnerable;
+        }
+
+        public void DealDamage(int damage)
+        {
+            if (health == 0) { return; }
+
+            if (isInvulnerable) { return; }
+            Debug.Log($"{name} took {damage} damage");
+            health = Mathf.Max(health - damage, 0);
+
+            OnTakeDamage?.Invoke();
+
+            if (health == 0)
+            {
+                OnDie?.Invoke();
+            }
         }
     }
-}
 
+
+}

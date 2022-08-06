@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Target : MonoBehaviour
+namespace Combat
 {
-     public event Action<Target> OnDestroyed;
-
-    private void OnDestroy()
+    public class Target : MonoBehaviour
     {
-        OnDestroyed?.Invoke(this);
+        public event Action<Target> OnDestroyed;
+
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke(this);
+        }
     }
 }
